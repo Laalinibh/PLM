@@ -2,40 +2,7 @@
 
 PLM maps **camera + LiDAR/4D-radar + IMU + a natural-language command** to a **short, smooth chunk of flight commands**. It uses a neuromorphic core: leaky integrate-and-fire (LIF) spiking attention and liquid time-constant (LTC) continuous-time recurrence. The model is trained with a **four-stage curriculum**. At run time a cheap "edge drafter" flies the drone, and the full model verifies the drafter's actions in batches, off the critical path.
 
-This repository is a rebuild of the original `plmfinalwithmem.ipynb` notebook. It follows the training and systems design worked out in the design conversation (`plm.pdf`: *"now get into its training"* and the follow-ups on GPU systems, speculative decoding and robotics safety). Everything lives in a single file, `plm.py`, split into notebook cells with `# %%` markers. `PLM_v2.ipynb` is the same code as a Colab notebook.
-
-```
-python plm.py --mode quick          # CPU smoke test, ~3 min
-python plm.py --mode small          # CPU-scale research run (numbers in the paper draft), ~1-2 h on 2 cores
-python plm.py --mode full           # GPU run: pretrained ViT, 224 px, full-flight coverage + DAgger (CUDA or Apple MPS)
-python plm.py --mode small --set spiking=false core_ff=mlp   # ablations: any Config field can be overridden
-```
-
----
-
-## 1. What changed from the original notebook
-
-| Area | Original notebook | PLM v2 |
-|---|---|---|
-| Data | `torch.randn` frames/LiDAR/sensors; actions = `tanh(sensors)`, so nothing visual was learnable | Procedural drone simulator. Rendered FPV camera, LiDAR voxels with a Doppler channel, IMU, moving obstacles, two beacons, 7 language intents with paraphrases, a potential-field expert, non-uniform Δt, DART-style state perturbation |
-| Stage 1 contrastive | `InfoNCE(embeddings, embeddings)`. The positive is the query itself, so the loss is trivial | Cell-level radar↔camera InfoNCE in a shared BEV grid, plus camera→occupancy (metric depth) and a Doppler-velocity loss |
-| Fusion | Concatenate three pooled vectors | Camera patch tokens lifted into a metric BEV grid by cross-attention, fused with LiDAR pillars, then pooled by **command-conditioned** cross-attention |
-| Spiking neuron | One LIF step per forward pass, so the membrane never integrates over time; triangular surrogate | LIF unrolled over time with **Δt-dependent leak** β = exp(−Δt/τ), soft reset, fast-sigmoid surrogate 1/(1+k\|z\|)², spike-rate regularisation |
-| LTC | `state + (cand − state)/tau` applied to a *stack of layers* rather than across time; no Δt | **Closed-form LTC across time** with real non-uniform Δt, per-unit reversal potentials, spectral clamp on the recurrent matrix |
-| Action head | Linear, one action per step | CNN decoder emitting an **H-step Gaussian action chunk** (mean, log-σ) |
-| Losses | MSE | Discounted multi-horizon trajectory loss, jerk penalty, Gaussian NLL for σ, auxiliary JEPA, spike-rate regulariser |
-| Speculative decoding | Repeats one draft action k times, and "verifies" by re-running the target on a duplicated last frame | Asynchronous speculative control. The drafter acts every tick; the target verifies the last k drafts in one batched pass, overrides on rejection, adapts k, and feeds rejections to a hard-rejection buffer |
-| Drafter | Same model with 1 layer (still runs the ViT) | Separate **edge drafter with no camera path** (LiDAR BEV + IMU + command → 1-layer LIF/LTC), distilled with KL plus a safety hinge |
-| Muscle memory | CPU/NumPy linear scan over raw embeddings with L2 threshold; returns cached actions for any input | Device-resident cosine-NN cache keyed by drafter latent **and command**, confidence-gated, LRU eviction, filled only with **target-verified** chunks |
-| Safety | none | Control-barrier-function (CBF) velocity filter on every executed command |
-| RL | none | Optional GRPO on action chunks with simulator-scored rewards, KL-anchored to the BC policy |
-| Stability | none | Global-norm clipping 1.0, spectral clamp, TBPTT with detached carry-over, FP32 ODE/membrane under BF16/FP16 autocast, frozen-feature cache |
-| Evaluation | Printed losses | Per-stage metrics against trivial baselines, closed-loop success/collision rates, acceptance rate, target passes per tick, critical-path vs off-path latency |
-| Deployment | `handler.py` string | `export/` with weights, config, `plm.py` and a Hugging Face `EndpointHandler` |
-
----
-
-## 2. Architecture
+## 1. Architecture
 
 ```
                     ┌──────────────────────── PERCEPTION (Stage 1, then frozen) ─────────────────────────┐
@@ -186,7 +153,7 @@ Guarantee: every executed action is **either target-verified, or within one veri
 
 ---
 
-## 5. Numerical-stability rules (from the design doc's table)
+## 5. Numerical-stability rules 
 
 | Problem | Implementation |
 |---|---|
@@ -197,25 +164,8 @@ Guarantee: every executed action is **either target-verified, or within one veri
 
 ---
 
-## 6. What from the design conversation was **not** implemented, and why
 
-`plm.pdf` also covers frontier-scale systems: 4D parallelism (FSDP/ZeRO-3, Megatron TP/SP, 1F1B pipelines), MFU accounting, Triton fused RMSNorm/SwiGLU/FlashAttention kernels, FP8/MX formats, ring/tree all-reduce, silent-data-corruption canaries, straggler mitigation, multi-tier checkpointing, radix-tree KV caches, MLA, grammar-constrained decoding and MoE routing.
-
-These solve problems of **70B–1T-parameter models on thousands of GPUs**. PLM has a few million trainable parameters and fits on one GPU with room to spare, so FSDP, TP, PP, FP8, MoE and SDC detection would add complexity with no benefit. A fused RMSNorm kernel would not change wall-clock time at this size: the recurrent time loop, not memory bandwidth, is the bottleneck.
-
-The ideas that *do* transfer are implemented:
-* keep ODE state in FP32 under mixed precision
-* cache precomputed features
-* speculative drafting in feature space rather than raw-input space: the drafter consumes perception *features*, similar in spirit to EAGLE drafting from hidden states
-* CBF safety filtering
-
-**Tree / EAGLE multi-candidate speculation** assumes the target can verify a draft *before* it is executed. Under asynchronous verification (above), only one action per tick can be executed, so a tree of candidates has no branch to commit to. It is left as future work for a synchronous, planning-style variant.
-
-**Flow matching / mixture density heads** (the doc's remedy for mode averaging) are a natural next step: the Gaussian chunk head can average "pass left" and "pass right". For now, the tangential expert term plus the CBF mitigates this.
-
----
-
-## 7. Outputs
+## 6. Outputs
 
 ### Running on your machine
 * **NVIDIA GPU:** `python plm.py --mode full`. BF16 on Ampere and newer, otherwise FP16 with a GradScaler. Pretrained ViT-Tiny weights download automatically through `timm`.
