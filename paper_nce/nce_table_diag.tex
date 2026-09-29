@@ -1,0 +1,10 @@
+\begin{table}[t]\centering\small
+\caption{Offline imitation error versus closed-loop outcome (target policy, every tick). Lower offline error did not mean
+better control.}\label{tab:diag}
+\resizebox{\linewidth}{!}{\begin{tabular}{lcccc}\toprule
+Run & Chunk MSE & vs.\ mean action & Success & Final goal dist.\ (m) \\\midrule
+Full IMU to policy (copycat) & 0.0042 & 19.0$\times$ & 0.00 & 12.9 \\
+Geometry-only perception (colour-blind) & 0.0080 & 10.0$\times$ & 0.04 & 12.2 \\
+PLM & 0.0062 & 13.0$\times$ & 0.12 & 11.7 \\
+PLM + DAgger (2 rounds) & 0.0062 & 12.9$\times$ & 0.12 & 6.4 \\
+\bottomrule\end{tabular}}\end{table}

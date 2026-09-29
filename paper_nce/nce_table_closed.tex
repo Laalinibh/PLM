@@ -1,0 +1,12 @@
+\begin{table}[t]\centering\small\setlength{\tabcolsep}{3.5pt}
+\caption{Closed-loop control (30 episodes, 24 goal-reaching; success with 95\% Wilson interval).
+Critical-path latency on a 2-core CPU; energy per tick from operation counts (critical path / total including off-path
+verification).}\label{tab:closed}
+\resizebox{\linewidth}{!}{\begin{tabular}{lccccccc}\toprule
+Controller & Success & Collision & Jerk & Accept. & Crit.\ ms & Crit.\ $\mu$J & Total $\mu$J \\\midrule
+Expert (privileged) & 1.00 {\scriptsize[0.86,1.00]} & 0.00 & 0.0004 & -- & 10.4 & -- & -- \\
+Target, every tick & 0.12 {\scriptsize[0.04,0.31]} & 0.00 & 0.0037 & -- & 24.2 & 1062 & 1062 \\
+Target, chunk ($k{=}4$) & 0.17 {\scriptsize[0.07,0.36]} & 0.00 & 0.0051 & -- & 18.6 & 1055 & 1055 \\
+Drafter only & 0.08 {\scriptsize[0.02,0.26]} & 0.03 & 0.0011 & -- & 7.5 & 99 & 99 \\
+\textbf{Verify-behind} & 0.12 {\scriptsize[0.04,0.31]} & 0.00 & 0.0158 & 0.75 & 4.1 & 98 & 1062 \\
+\bottomrule\end{tabular}}\end{table}

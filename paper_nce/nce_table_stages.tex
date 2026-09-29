@@ -1,0 +1,14 @@
+\begin{table}[t]\centering\small
+\caption{Per-stage diagnostics on held-out data, each against a trivial baseline.}\label{tab:stages}
+\begin{tabular}{llcc}\toprule
+Stage & Metric & PLM & Baseline \\\midrule
+1 & cell-level radar$\leftrightarrow$camera top-1 & 0.410 & 0.0072 (chance) \\
+1 & camera$\to$BEV occupancy IoU & 0.452 & -- \\
+1 & beacon accuracy, camera tokens / BEV cells & 0.93 / 0.39 & 0.25 (chance) \\
+1 & Doppler MAE & 0.048 & 0.209 (predict 0) \\
+2 & latent prediction MSE & 0.0343 & 0.0376 (persistence) \\
+2 & mean firing rate & 0.077 & target 0.08 \\
+3 & action-chunk MSE & 0.0062 & 0.0803 (mean action) \\
+3 & chunk jerk & 0.0003 & 0.0002 (expert) \\
+4 & offline draft acceptance & 0.762 & 0.840 (distillation only) \\
+\bottomrule\end{tabular}\end{table}

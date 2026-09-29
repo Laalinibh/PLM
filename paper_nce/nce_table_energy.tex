@@ -1,0 +1,13 @@
+\begin{table}[t]\centering\small
+\caption{Dense operation count and energy per control tick, by component (MACs at 4.6\,pJ, before any spike-driven
+reduction). The camera encoder dominates; the liquid--spiking core is 0.8\% of a full-model tick.}\label{tab:energy}
+\begin{tabular}{lrr}\toprule Component & MMACs & $\mu$J \\\midrule
+LiDAR/radar pillar encoder & 21.22 & 97.6 \\
+camera ViT-Tiny & 202.05 & 929.4 \\
+BEV lifter + fusion & 2.49 & 11.4 \\
+state tokenizer (1 step) & 3.02 & 13.9 \\
+target liquid--spiking core ($T$ steps) & 1.84 & 8.4 \\
+target action head (last step) & 0.27 & 1.2 \\
+drafter latent (1 step) & 0.09 & 0.4 \\
+drafter core ($T$ steps) + head (last step) & 0.19 & 0.9 \\
+\bottomrule\end{tabular}\end{table}

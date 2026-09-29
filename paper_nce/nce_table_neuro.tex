@@ -1,0 +1,12 @@
+\begin{table}[t]\centering\small\setlength{\tabcolsep}{3.5pt}
+\caption{Core variants (Stages 2--3 retrained from the same frozen perception and feature cache; closed loop on the same
+30 seeds, 24 goal-reaching). ``Spike-driven share'' is the fraction of the core's dense MACs whose inputs
+are spikes; energy is per control tick (window $T$) with accumulates at the measured firing rate.}\label{tab:neuro}
+\resizebox{\linewidth}{!}{\begin{tabular}{lcccccccc}\toprule
+Core & Spike-driven & Core $\mu$J & Saving & Rate & Chunk MSE & Success & Success & Collision \\
+ & share & /tick & vs dense & & & (every tick) & (chunk) & \\\midrule
+LIF spiking attention (PLM) & 1.8\% & 8.29 & 1.8\% & 0.079 & 0.0062 & 0.12 & 0.17 & 0.00 \\
+Dense attention (no LIF) & 0.0\% & 8.44 & 0.0\% & -- & 0.0074 & 0.12 & 0.08 & 0.00 \\
+No LTC (feed-forward MLP) & 2.1\% & 7.09 & 2.1\% & 0.079 & 0.0083 & 0.04 & 0.04 & 0.00 \\
+Spike-driven projection inputs & 58.9\% & 3.55 & 58.0\% & 0.078 & 0.0081 & 0.12 & 0.04 & 0.00 \\
+\bottomrule\end{tabular}}\end{table}

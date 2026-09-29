@@ -1,0 +1,53 @@
+device=cpu amp=None
+[warn] pretrained ViT unavailable (ProxyError); training the ViT from scratch
+{"target_total": 6784154, "target_trainable": 6784154, "vit": 5493696, "drafter": 47336}
+
+=== Stage 1: loading perception from runs/plm_small/perception.pt ===
+[stage1_val] step 0: l_contra=1.7423 l_occ=0.9297 l_vel=0.0580 contra_top1=0.3958 cam_occ_iou=0.4312 vel_mae=0.0580 vel_mae_zero_baseline=0.2040 n_pairs=128.1250
+
+=== Building frozen-perception feature cache ===
+cache: 400 episodes x 21 steps, 56 MB, 60s
+cache: 60 episodes x 21 steps, 8 MB, 8s
+
+=== Stage 2: continuous-time world model (JEPA + spike regularisation, TBPTT) ===
+[stage2] step 0: loss_dyn=0.0332 persistence_baseline=0.0332 spike_rate=0.0098 grad_norm=0.0038 sec=0.1493
+[stage2] step 100: loss_dyn=0.0427 persistence_baseline=0.0442 spike_rate=0.0815 grad_norm=0.0048 sec=14.9096
+[stage2] step 200: loss_dyn=0.0396 persistence_baseline=0.0412 spike_rate=0.0758 grad_norm=0.0051 sec=29.9415
+[stage2] step 300: loss_dyn=0.0374 persistence_baseline=0.0391 spike_rate=0.0826 grad_norm=0.0087 sec=45.0036
+[stage2] step 400: loss_dyn=0.0329 persistence_baseline=0.0353 spike_rate=0.0792 grad_norm=0.0143 sec=59.9768
+[stage2] step 500: loss_dyn=0.0325 persistence_baseline=0.0360 spike_rate=0.0799 grad_norm=0.0112 sec=74.5260
+[stage2] step 600: loss_dyn=0.0381 persistence_baseline=0.0425 spike_rate=0.0747 grad_norm=0.0120 sec=90.0145
+[stage2] step 700: loss_dyn=0.0322 persistence_baseline=0.0350 spike_rate=0.0831 grad_norm=0.0095 sec=105.6832
+[stage2] step 799: loss_dyn=0.0318 persistence_baseline=0.0361 spike_rate=0.0764 grad_norm=0.0099 sec=120.6526
+[stage2_val] step 0: val_jepa=0.0381 val_persistence=0.0408 jepa_vs_persistence=0.9323 spike_rate=0.0753
+
+=== Stage 3: language-conditioned action-chunk imitation ===
+[stage3] step 0: loss=2.7589 l_traj=0.7192 l_jerk=1.9518 l_nll=0.8015 l_jepa=0.0389 spike_rate=0.0790 grad_norm=16.6344 sec=0.1604
+[stage3] step 100: loss=-0.0928 l_traj=0.0402 l_jerk=0.0112 l_nll=-1.5168 l_jepa=0.0367 spike_rate=0.0749 grad_norm=0.5180 sec=13.0112
+[stage3] step 200: loss=-0.2299 l_traj=0.0259 l_jerk=0.0047 l_nll=-2.6901 l_jepa=0.0423 spike_rate=0.0723 grad_norm=0.5067 sec=25.7454
+[stage3] step 300: loss=-0.2590 l_traj=0.0196 l_jerk=0.0029 l_nll=-2.8912 l_jepa=0.0380 spike_rate=0.0770 grad_norm=0.4530 sec=38.8213
+[stage3] step 400: loss=-0.2405 l_traj=0.0247 l_jerk=0.0021 l_nll=-2.7408 l_jepa=0.0332 spike_rate=0.0766 grad_norm=0.3532 sec=52.0460
+[stage3] step 500: loss=-0.2531 l_traj=0.0259 l_jerk=0.0018 l_nll=-2.8721 l_jepa=0.0324 spike_rate=0.0748 grad_norm=0.4308 sec=65.3835
+[stage3] step 600: loss=-0.2560 l_traj=0.0225 l_jerk=0.0016 l_nll=-2.8741 l_jepa=0.0362 spike_rate=0.0782 grad_norm=0.3845 sec=78.6812
+[stage3] step 700: loss=-0.2618 l_traj=0.0181 l_jerk=0.0013 l_nll=-2.8909 l_jepa=0.0396 spike_rate=0.0803 grad_norm=0.3563 sec=91.2160
+[stage3] step 800: loss=-0.2767 l_traj=0.0157 l_jerk=0.0012 l_nll=-3.0015 l_jepa=0.0330 spike_rate=0.0849 grad_norm=0.2687 sec=103.8408
+[stage3] step 900: loss=-0.3057 l_traj=0.0085 l_jerk=0.0009 l_nll=-3.2141 l_jepa=0.0314 spike_rate=0.0772 grad_norm=0.2270 sec=116.7817
+[stage3] step 1000: loss=-0.2563 l_traj=0.0170 l_jerk=0.0009 l_nll=-2.8155 l_jepa=0.0369 spike_rate=0.0802 grad_norm=0.4131 sec=129.8625
+[stage3] step 1100: loss=-0.2804 l_traj=0.0101 l_jerk=0.0010 l_nll=-2.9811 l_jepa=0.0329 spike_rate=0.0821 grad_norm=0.3721 sec=143.1819
+[stage3] step 1200: loss=-0.2574 l_traj=0.0160 l_jerk=0.0008 l_nll=-2.8096 l_jepa=0.0337 spike_rate=0.0784 grad_norm=0.4908 sec=156.3310
+[stage3] step 1300: loss=-0.2732 l_traj=0.0085 l_jerk=0.0007 l_nll=-2.8961 l_jepa=0.0357 spike_rate=0.0792 grad_norm=0.3040 sec=169.9399
+[stage3] step 1400: loss=-0.2814 l_traj=0.0093 l_jerk=0.0007 l_nll=-2.9819 l_jepa=0.0339 spike_rate=0.0746 grad_norm=0.3126 sec=183.3907
+[stage3] step 1500: loss=-0.3129 l_traj=0.0080 l_jerk=0.0007 l_nll=-3.2830 l_jepa=0.0337 spike_rate=0.0816 grad_norm=0.2477 sec=196.3471
+[stage3] step 1600: loss=-0.3008 l_traj=0.0122 l_jerk=0.0008 l_nll=-3.1942 l_jepa=0.0285 spike_rate=0.0818 grad_norm=0.2053 sec=208.9969
+[stage3] step 1700: loss=-0.2852 l_traj=0.0190 l_jerk=0.0005 l_nll=-3.1065 l_jepa=0.0298 spike_rate=0.0799 grad_norm=0.4796 sec=222.0042
+[stage3] step 1800: loss=-0.3021 l_traj=0.0132 l_jerk=0.0006 l_nll=-3.2344 l_jepa=0.0375 spike_rate=0.0786 grad_norm=0.2773 sec=235.2714
+[stage3] step 1900: loss=-0.2812 l_traj=0.0087 l_jerk=0.0006 l_nll=-2.9855 l_jepa=0.0401 spike_rate=0.0781 grad_norm=0.3169 sec=248.6172
+[stage3] step 2000: loss=-0.2868 l_traj=0.0161 l_jerk=0.0007 l_nll=-3.1003 l_jepa=0.0322 spike_rate=0.0821 grad_norm=0.2966 sec=261.7338
+[stage3] step 2100: loss=-0.3216 l_traj=0.0115 l_jerk=0.0006 l_nll=-3.4011 l_jepa=0.0323 spike_rate=0.0792 grad_norm=0.2125 sec=274.7617
+[stage3] step 2200: loss=-0.3124 l_traj=0.0116 l_jerk=0.0006 l_nll=-3.3059 l_jepa=0.0305 spike_rate=0.0807 grad_norm=0.2244 sec=287.7816
+[stage3] step 2300: loss=-0.3071 l_traj=0.0108 l_jerk=0.0007 l_nll=-3.2548 l_jepa=0.0349 spike_rate=0.0786 grad_norm=0.3014 sec=300.5906
+[stage3] step 2400: loss=-0.3143 l_traj=0.0076 l_jerk=0.0006 l_nll=-3.2877 l_jepa=0.0314 spike_rate=0.0807 grad_norm=0.2257 sec=312.7818
+[stage3] step 2499: loss=-0.3225 l_traj=0.0093 l_jerk=0.0007 l_nll=-3.3934 l_jepa=0.0343 spike_rate=0.0803 grad_norm=0.2346 sec=325.7844
+[stage3_val] step 0: val_first_mse=0.0074 val_chunk_mse=0.0080 val_mean_baseline_mse=0.0803 pred_jerk=0.0003 expert_jerk=0.0002 sigma=0.0353
+[eval_bc_expert] step 0: success_rate=1.0000 collision_rate=0.0000 final_goal_dist=1.1547 action_jerk=0.0004 target_passes_per_tick=0.0000 target_windows_per_tick=0.0000 acceptance_rate=nan cache_hit_rate=0.0000 cbf_intervention_rate=0.0000 critical_path_ms=3.2022 offpath_ms=13.5505
+[eval_bc_target] step 0: success_rate=0.0417 collision_rate=0.0000 final_goal_dist=12.2071 action_jerk=0.0048 target_passes_per_tick=1.0000 target_windows_per_tick=1.0000 acceptance_rate=nan cache_hit_rate=0.0000 cbf_intervention_rate=0.2547 critical_path_ms=23.9909 offpath_ms=0.0000

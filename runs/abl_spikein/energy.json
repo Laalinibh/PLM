@@ -1,0 +1,56 @@
+{
+ "config": {
+  "T": 8,
+  "d_model": 128,
+  "n_layers": 2,
+  "img_size": 96,
+  "bev_grid": 6
+ },
+ "energy_constants_pJ": {
+  "MAC": 4.6,
+  "AC": 0.9,
+  "source": "Horowitz, ISSCC 2014, 45 nm, 32-bit FP"
+ },
+ "macs_per_tick": {
+  "lidar_encoder": 21219840.0,
+  "camera_vit": 202051584.0,
+  "bev_lifter_fusion": 2488320.0,
+  "state_tokenizer": 3015808.0,
+  "target_core(window T)": 1835008.0,
+  "target_head(last step)": 266240.0,
+  "drafter_latent": 90288.0,
+  "drafter_core_head(window T)": 192512.0
+ },
+ "firing_rates": {
+  "L0.in": 0.0848541259765625,
+  "L0.Q": 0.07408523559570312,
+  "L0.K": 0.07426071166992188,
+  "L0.V": 0.0754852294921875,
+  "L0.ltc_in": 0.07932662963867188,
+  "L1.in": 0.08270263671875,
+  "L1.Q": 0.0751190185546875,
+  "L1.K": 0.07516098022460938,
+  "L1.V": 0.07733535766601562,
+  "L1.ltc_in": 0.07959747314453125
+ },
+ "mean_firing_rate": 0.07779273986816407,
+ "core": {
+  "total_macs_ann": 1835008.0,
+  "attention_matmul_macs": 32768.0,
+  "attention_fraction": 0.017857142857142856,
+  "spike_driven_attention_acs": 2474.1875,
+  "energy_ann_uJ": 8.4410368,
+  "spike_driven_fraction_of_core": 0.5892857142857143,
+  "energy_spiking_as_built_uJ": 3.5471260187499998,
+  "energy_fully_spike_driven_bound_uJ": 0.12847527000000003,
+  "saving_as_built": 0.5797760271877976,
+  "saving_fully_spike_driven_bound": 0.9847796813301418
+ },
+ "per_tick_uJ": {
+  "target_every_tick": 1062.0332799999999,
+  "drafter_only": 98.912144,
+  "verify_behind_critical_path": 98.912144,
+  "verify_behind_total": 1063.3341599999999,
+  "camera_vit_share_of_target": 0.8751489279130688
+ }
+}
