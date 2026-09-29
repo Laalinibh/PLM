@@ -261,13 +261,3 @@ CPU-scale run (`--mode small`, one seed, 30 evaluation episodes):
 
 What this shows: every stage beats its trivial baseline, and verify-behind keeps the target's success and zero collisions at about 6× lower critical-path latency. Absolute success is low. The diagnosis is data coverage: DAgger halves the final distance to the goal but does not yet convert it into success at this scale (§3, Stage 3b). The repository also keeps the two failed runs whose offline error looked *better* (copycat: chunk MSE 0.0042 with 0 % success; colour-blind: 4 %). Those numbers come from a **from-scratch ViT at 96 px on 2 CPU cores** (the pretrained-weight download was blocked in that environment), so they validate the pipeline and the relative comparisons, not absolute performance. For publishable numbers, run `--mode full` on a GPU (pretrained ViT-Tiny, 224 px), repeat for ≥ 3 seeds, and add the external benchmarks listed in the paper's limitations.
 
----
-
-## 9. Limitations (honest list)
-
-* **Simulator, not a flight stack.** Kinematic first-order dynamics, sphere obstacles and a rendered FPV image with no textures or lighting. This validates the method, but it is not evidence of real-world transfer. Next step: AirSim / Colosseum, Flightmare, or Isaac Sim / Pegasus with PX4 software-in-the-loop, then hardware.
-* **The CBF uses ground-truth obstacle states.** A real system needs a LiDAR/radar tracker feeding it.
-* **The energy claim is not measured.** Spike sparsity is reported, but joules per inference need neuromorphic hardware (Loihi 2, SpiNNaker 2, Speck) or at least a synaptic-operation-count model.
-* **Latency is measured on a general-purpose CPU/GPU** in a single process. "Off-path" verification runs sequentially here; a real deployment would put it on a separate stream or core.
-* **The expert is privileged** (it knows every obstacle position), so BC inherits its local-minimum behaviour. A learned or MPC expert would be stronger.
-* **The Gaussian chunk head is unimodal** (see §6).
